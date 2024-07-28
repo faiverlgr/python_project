@@ -1,7 +1,6 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget, QPushButton
-from src.view.menu_toolbar import menu_ppal
-from view.MainWindow import MainWindow
+from view.menu_toolbar import menu_ppal
 
 
 class App(QMainWindow):
@@ -9,7 +8,7 @@ class App(QMainWindow):
         super(App, self).__init__(parent=parent)
         self.areah1 = None
         self.button1 = None
-        self.setWindowTitle("Mi app de toda la vida")
+        self.setWindowTitle("Mi app")
         self.setFixedSize(1080, 624)
         self.setMenuBar(menu_ppal(self))
         self.configurar()
@@ -25,9 +24,9 @@ class App(QMainWindow):
         self.areah1.addWidget(self.button1)
 
         container.setStyleSheet("QHBoxLayout{\n"
-            "    background: red;\n"
-            "    color: black\n"
-            "}")
+                                "    background: red;\n"
+                                "    color: black\n"
+                                "}")
 
 
 def button_clicked():
