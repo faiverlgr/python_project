@@ -8,7 +8,7 @@ class App(QMainWindow):
         super(App, self).__init__(parent=parent)
         self.areah1 = None
         self.button1 = None
-        self.setWindowTitle("Mi app")
+        self.setWindowTitle("Mi app de toda la vida")
         self.setFixedSize(1080, 624)
         self.setMenuBar(menu_ppal(self))
         self.configurar()
