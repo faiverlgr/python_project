@@ -1,7 +1,7 @@
 import sys
 from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
-from PySide6.QtWidgets import QApplication, QWidget, QTableWidgetItem
-from ui.Catalogo_ui import Ui_frm_catalogo
+from PySide6.QtWidgets import QApplication, QTableWidgetItem, QDialog
+from ui.CatalogoDialog_ui import Ui_Dialog
 import sqlite3
 
 
@@ -32,37 +32,59 @@ class MyTableModel(QAbstractTableModel):
         return None
 
 
-class Catalogo(QWidget, Ui_frm_catalogo):
+class Catalogo(QDialog, Ui_Dialog):
     def __init__(self, parent=None):
         super(Catalogo, self).__init__(parent)
-        # self.model = None
+
+        # VARIABLES
         self.model = None
+        self.msg = None
+        self.item = None
         self.setupUi(self)
         self.setWindowTitle('Catalogo')
         self.configurar()
         self.loaddata()
         self.viewdata()
 
+        # EVENTOS
+        self.tbl_detalle.itemSelectionChanged.connect(self.show_items)
+
+    def muestra_clases(self, row):
+        self.btn_clase.setText(self.tbl_detalle.item(row, 0).text())
+        self.txt_clase.setText(self.tbl_detalle.item(row, 1).text())
+
+    def show_items(self):
+        self.muestra_clases(self.tbl_detalle.currentRow())
+
     def configurar(self):
-        self.tableCuentas.setColumnWidth(0, 120)
-        self.tableCuentas.setColumnWidth(1, 348)
+        self.tbl_detalle.setColumnWidth(0, 120)
+        self.tbl_detalle.setColumnWidth(1, 348)
 
     def loaddata(self):
         connection = sqlite3.connect('D:\\servi\\source\\ProfitnetDB\\profitnetdb.db')
         cursor = connection.cursor()
-        sql = "SELECT CAT_CodigoPUC, CAT_NombrePUC FROM Catalogo_PAR"
+        sql = "SELECT CAT_CodigoPUC, CAT_NombrePUC FROM Catalogo_PAR WHERE CAT_Clase IS NULL"
         cursor.execute(sql)
+        # almacena el resultado de la consulta en una lista
         resultado = cursor.fetchall()
         cursor.close()
 
+        # almacena la cantidad de filas en una variable
         registros = len(resultado)
-        self.tableCuentas.setRowCount(registros)
+        # especifica la cantidad de filas a la tabla
         if registros > 0:
-            count = 0
-            for row in resultado:
-                self.tableCuentas.setItem(count, 0, QTableWidgetItem(row[0]))
-                self.tableCuentas.setItem(count, 1, QTableWidgetItem(row[1]))
-                count += 1
+            self.tbl_detalle.setRowCount(registros)
+            fila = 0
+            for item_resultado in resultado:
+                self.tbl_detalle.setItem(fila, 0, QTableWidgetItem(item_resultado[0]))
+                self.tbl_detalle.setItem(fila, 1, QTableWidgetItem(item_resultado[1]))
+                fila += 1
+
+            # la tabla recibe el foco y selecciona la primera fila
+            self.tbl_detalle.setFocus()
+            self.tbl_detalle.selectRow(0)
+            # Llena botones y textos con valores de la primera fila de la tabla
+            self.muestra_clases(0)
 
     def viewdata(self):
         connection = sqlite3.connect('D:\\servi\\source\\ProfitnetDB\\profitnetdb.db')
