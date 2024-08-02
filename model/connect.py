@@ -7,10 +7,10 @@ username = ""
 password = ""
 
 
-def connection_sqlite():
-    global db
+def conn():
+    # global db
     conn_string = sqlite3.connect('D:\\servi\\source\\ProfitnetDB\\profitnetdb.db')
-
+    return conn_string
 
 # def conexion_sql():
 #     global db
@@ -31,5 +31,3 @@ def connection_sqlite():
 #         else:
 #             print("Error connecting to database")
 
-
-connection_sqlite()

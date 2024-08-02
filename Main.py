@@ -2,7 +2,7 @@ import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget, QPushButton
 from PySide6.QtWidgets import QDialog
 from view.menu_toolbar import menu_ppal
-from view.Catalogo import Catalogo
+from view.Catalogo_frm import Catalogo
 
 
 class App(QMainWindow):
