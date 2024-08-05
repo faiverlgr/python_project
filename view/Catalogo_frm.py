@@ -1,36 +1,9 @@
 import sys
-from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
+
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QTableWidgetItem, QDialog
 from ui.CatalogoDialog_ui import Ui_Dialog
-from model.Catalogo_model import query_catalogo, query_account
-import sqlite3
-
-
-class MyTableModel(QAbstractTableModel):
-    def __init__(self, data, header_data, parent=None):
-        super(MyTableModel, self).__init__(parent)
-        self._data = data
-        self._header_data = header_data
-
-    def rowCount(self, parent=QModelIndex()):
-        return len(self._data)
-        # return self.data.shape[0]
-
-    def columnCount(self, parent=QModelIndex()):
-        if self.rowCount() > 0:
-            return len(self._data[0])
-        return 0
-
-    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
-        if role == Qt.ItemDataRole.DisplayRole:
-            # column_key = self._header_data[index.column()]
-            return str(self._data[index.row()][index.column()])
-        return None
-
-    def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
-        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
-            return str(self._header_data[section])
-        return None
+from model.Catalogo_model import query_account
 
 
 class Catalogo(QDialog, Ui_Dialog):
@@ -41,124 +14,134 @@ class Catalogo(QDialog, Ui_Dialog):
         self.model = None
         self.msg = None
         self.item = None
-        self.mode: str = "mode_class"
+        self.mode: str = "mode_init"
         self.new_code: str = ""
         self.setupUi(self)
         self.setWindowTitle('Catalogo')
         self.configurar()
-        self.loaddata()
-        self.viewdata()
+        self.navega_cuentas(par_event="click_init")
 
         # EVENTOS
-        self.tbl_detalle.itemSelectionChanged.connect(self.show_items)
-        self.btn_clase.clicked.connect(lambda: self.navega_cuentas(par_mode="click_class"))
-        self.btn_grupo.clicked.connect(lambda: self.navega_cuentas(par_mode="click_group"))
-        self.btn_cuenta.clicked.connect(lambda: self.navega_cuentas(par_mode="click_account"))
-        self.btn_subcta.clicked.connect(lambda: self.navega_cuentas(par_mode="click_subaccount"))
-        self.btn_iniciar.clicked.connect(lambda: self.navega_cuentas(par_mode="click_init"))
+        # self.tbl_detalle.itemSelectionChanged.connect(self.show_items)
+        self.tbl_detalle.itemActivated.connect(self.navega_cuentas_2)
+        self.tbl_detalle.itemDoubleClicked.connect(self.navega_cuentas_2)
+        self.btn_clase.clicked.connect(lambda: self.navega_cuentas(par_event="click_class"))
+        self.btn_grupo.clicked.connect(lambda: self.navega_cuentas(par_event="click_group"))
+        self.btn_cuenta.clicked.connect(lambda: self.navega_cuentas(par_event="click_account"))
+        self.btn_subcta.clicked.connect(lambda: self.navega_cuentas(par_event="click_subaccount"))
+        self.btn_iniciar.clicked.connect(lambda: self.navega_cuentas(par_event="click_init"))
 
-    def show_items(self):
+    def navega_cuentas(self, par_event: str):
+        """Navega en cuentas desde botones"""
+        # Limpia controles | crea query para el boton clickeado | almacena cuenta del boton
+        if par_event == "click_init":
+            par_value = "IS NULL"
+            self.prepara_data('init', par_value)
+        elif par_event == "click_class":
+            # Almacena la clase para usar al crear un grupo
+            self.new_code = self.btn_clase.text()
+            # Llena variable y lanza para consulta
+            par_value = self.btn_clase.text()
+            self.prepara_data('clase', par_value)
+        elif par_event == "click_group":
+            # Almacena el grupo para usar al crear una cuenta
+            self.new_code = self.btn_grupo.text()
+            # Llena variable y lanza para consulta
+            par_value = self.btn_grupo.text()
+            self.prepara_data('grupo', par_value)
+        elif par_event == "click_account":
+            # Almacena la cuenta para usar al crear una subcuenta
+            self.new_code = self.btn_cuenta.text()
+            # Llena variable y lanza para consulta
+            par_value = self.btn_cuenta.text()
+            self.prepara_data('cuenta', par_value)
+        elif par_event == "click_subaccount":
+            # Almacena la subcuenta para usar al crear un item
+            self.new_code = self.btn_subcta.text()
+            # Llena variable y lanza para consulta
+            par_value = self.btn_subcta.text()
+            self.prepara_data('subcuenta', par_value)
+        else:
+            pass
+
+    def navega_cuentas_2(self):
+        """Modo explorar cuentas desde la tabla"""
+        # Toma el numero de la fila seleccionada
         row = self.tbl_detalle.currentRow()
-        if self.mode == "mode_class":
+        par_value = self.tbl_detalle.item(row, 0).text()
+        # Detecta el tipo de cuenta activado
+        if len(par_value) == 1:
+            # llena controles con item activado
             self.btn_clase.setText(self.tbl_detalle.item(row, 0).text())
             self.txt_clase.setText(self.tbl_detalle.item(row, 1).text())
-            self.btn_grupo.setText("")
-            self.txt_grupo.setText("")
-            self.btn_cuenta.setText("")
-            self.txt_cuenta.setText("")
-            self.btn_subcta.setText("")
-            self.txt_subcta.setText("")
-        elif self.mode == "mode_group":
+            self.prepara_data('clase', par_value)
+        elif len(par_value) == 2:
+            # llena controles con item activado
             self.btn_grupo.setText(self.tbl_detalle.item(row, 0).text())
             self.txt_grupo.setText(self.tbl_detalle.item(row, 1).text())
-            self.btn_cuenta.setText("")
-            self.txt_cuenta.setText("")
-            self.btn_subcta.setText("")
-            self.txt_subcta.setText("")
-        elif self.mode == "mode_account":
+            self.prepara_data('grupo', par_value)
+        elif len(par_value) == 4:
+            # llena controles con item activado
             self.btn_cuenta.setText(self.tbl_detalle.item(row, 0).text())
             self.txt_cuenta.setText(self.tbl_detalle.item(row, 1).text())
-            self.btn_subcta.setText("")
-            self.txt_subcta.setText("")
-        elif self.mode == "mode_subaccount":
+            self.prepara_data('cuenta', par_value)
+        elif len(par_value) == 6:
+            # llena controles con item activado
             self.btn_subcta.setText(self.tbl_detalle.item(row, 0).text())
             self.txt_subcta.setText(self.tbl_detalle.item(row, 1).text())
+            self.prepara_data('subcuenta', par_value)
         else:
-            print("self.mode")
+            pass
 
-    def configurar(self):
-        self.tbl_detalle.setColumnWidth(0, 120)
-        self.tbl_detalle.setColumnWidth(1, 348)
-
-    def navega_cuentas(self, par_mode: str):
+    def prepara_data(self, par_nivel: str, par_value: str):
         par_column: str = ""
-        par_value: str = ""
         par_codenull: str = ""
-        if par_mode == "click_init":
-            # Almacena en variable codigo si se crea un grupo
-            self.new_code = self.btn_clase.text()
-            # resetea textos
-            self.btn_grupo.setText("")
-            self.txt_grupo.setText("")
-            self.btn_cuenta.setText("")
-            self.txt_cuenta.setText("")
-            self.btn_subcta.setText("")
-            self.txt_subcta.setText("")
-            # prepara el sql
+        consulta: bool = True
+        if par_nivel == "init":
+            # prepara el sql para consultar clases
             par_column = "CAT_Clase"
-            par_value = "IS NULL"
             par_codenull = "CAT_Grupo IS NULL"
-            self.mode = "mode_class"
-        elif par_mode == "click_class":
-            # Almacena en variable codigo si se crea una cuenta
-            self.new_code = self.btn_grupo.text()
-            # resetea textos
-            self.btn_cuenta.setText("")
-            self.txt_cuenta.setText("")
-            self.btn_subcta.setText("")
-            self.txt_subcta.setText("")
-            # prepara el sql
+            # cambia el modo a init
+            self.mode = "mode_init"
+        elif par_nivel == "clase":
+            # prepara el sql para consultar grupos
             par_column = "CAT_Clase ="
-            par_value = self.btn_clase.text()
             par_codenull = "CAT_Grupo IS NULL"
+            # cambia el modo a grupo
             self.mode = "mode_group"
-        elif par_mode == "click_group":
-            # Almacena en variable codigo si se crea una subcuenta
-            self.new_code = self.btn_cuenta.text()
-            # resetea textos
-            self.btn_subcta.setText("")
-            self.txt_subcta.setText("")
-            # prepara el sql
+        elif par_nivel == "grupo":
+            # prepara el sql para consultar cuentas
             par_column = "CAT_Grupo ="
-            par_value = self.btn_grupo.text()
             par_codenull = "CAT_Cuenta IS NULL"
+            # cambia el modo a cuenta
             self.mode = "mode_account"
-        elif par_mode == "click_account":
-            # Almacena en variable codigo si se crea un item
-            self.new_code = self.btn_subcta.text()
-            # prepara el sql
+        elif par_nivel == "cuenta":
+            # prepara el sql para consultar subcuentas
             par_column = "CAT_Cuenta ="
-            par_value = self.btn_cuenta.text()
             par_codenull = "CAT_Subcuenta IS NULL"
+            # cambia el modo a subcuenta
             self.mode = "mode_subaccount"
-        elif par_mode == "click_subaccount":
-            # prepara el sql
+        elif par_nivel == "subcuenta":
+            # prepara el sql para consultar items
             par_column = "CAT_Subcuenta ="
-            par_value = self.btn_subcta.text()
             par_codenull = "CAT_Clase IS NOT NULL"
-            # TODO: Este modo self.mode se debe dar solo si la consulta tiene resultados
+            # cambia el modo a subcuenta
             self.mode = "mode_item"
         else:
-            print("El par_column no esta definido")
+            consulta = False
 
-        if par_value:
-            # consulta datos y si encuentra llena la tabla
+        if consulta:
+            # consulta datos y si encuentra llena la tabla y cambia el modo
             data = query_account(name_col=par_column, par_code=par_value, par_null=par_codenull)
             count = len(data)
             if count > 0:
                 self.tbl_detalle.setRowCount(count)
                 fila = 0
                 for item_resultado in data:
+                    # new_cell1 = self.tbl_detalle.setItem(fila, 0, QTableWidgetItem())
+                    # new_cell2 = self.tbl_detalle.setItem(fila, 1, QTableWidgetItem())
+                    # new_cell1.setText(item_resultado[0])
+                    # new_cell2.setText(item_resultado[1])
                     self.tbl_detalle.setItem(fila, 0, QTableWidgetItem(item_resultado[0]))
                     self.tbl_detalle.setItem(fila, 1, QTableWidgetItem(item_resultado[1]))
                     self.tbl_detalle.setRowHeight(fila, 22)
@@ -168,40 +151,57 @@ class Catalogo(QDialog, Ui_Dialog):
                 self.tbl_detalle.setFocus()
                 self.tbl_detalle.selectRow(0)
                 # Llena botones y textos con valores de la primera fila de la tabla
-                self.show_items()
+                self.show_items(self.mode)
+            else:
+                print(f"no encontro datos para 'par_value': {par_value}")
+        else:
+            print(f"no es posible hacer la consulta")
 
-    def loaddata(self):
-        # almacena el resultado de la consulta en una lista
-        resultado = query_catalogo()
-        # almacena la cantidad de filas en una variable
-        registros = len(resultado)
-        # especifica la cantidad de filas a la tabla
-        if registros > 0:
-            self.tbl_detalle.setRowCount(registros)
-            fila = 0
-            for item_resultado in resultado:
-                self.tbl_detalle.setItem(fila, 0, QTableWidgetItem(item_resultado[0]))
-                self.tbl_detalle.setItem(fila, 1, QTableWidgetItem(item_resultado[1]))
-                self.tbl_detalle.setRowHeight(fila, 22)
-                fila += 1
+    def show_items(self, par_mode: str = None):
+        """Muestra los items en la tabla"""
+        # Toma el numero de la fila seleccionada
+        row = self.tbl_detalle.currentRow()
+        # Llena y limpia controles segun el modo
+        if par_mode == "mode_init":
+            self.btn_clase.setText(self.tbl_detalle.item(row, 0).text())
+            self.txt_clase.setText(self.tbl_detalle.item(row, 1).text())
+            self.btn_grupo.setText("")
+            self.txt_grupo.setText("")
+            self.btn_cuenta.setText("")
+            self.txt_cuenta.setText("")
+            self.btn_subcta.setText("")
+            self.txt_subcta.setText("")
+            # Almacena clase para crear grupo
+            self.new_code = self.btn_clase.text()
+        elif par_mode == "mode_group":
+            self.btn_grupo.setText(self.tbl_detalle.item(row, 0).text())
+            self.txt_grupo.setText(self.tbl_detalle.item(row, 1).text())
+            self.btn_cuenta.setText("")
+            self.txt_cuenta.setText("")
+            self.btn_subcta.setText("")
+            self.txt_subcta.setText("")
+            # Almacena grupo para crear cuenta
+            self.new_code = self.btn_grupo.text()
+        elif par_mode == "mode_account":
+            self.btn_cuenta.setText(self.tbl_detalle.item(row, 0).text())
+            self.txt_cuenta.setText(self.tbl_detalle.item(row, 1).text())
+            self.btn_subcta.setText("")
+            self.txt_subcta.setText("")
+            # Almacena cuenta para crear subcuenta
+            self.new_code = self.btn_cuenta.text()
+        elif par_mode == "mode_subaccount":
+            self.btn_subcta.setText(self.tbl_detalle.item(row, 0).text())
+            self.txt_subcta.setText(self.tbl_detalle.item(row, 1).text())
+            # Almacena subcuenta para crear item
+            self.new_code = self.btn_subcta.text()
+        elif par_mode == "mode_item":
+            pass
+        else:
+            print("self.mode no esta definido. No hay mas niveles para mostrar")
 
-            # la tabla recibe el foco y selecciona la primera fila
-            self.tbl_detalle.setFocus()
-            self.tbl_detalle.selectRow(0)
-            # Llena botones y textos con valores de la primera fila de la tabla
-            self.show_items()
-
-    def viewdata(self):
-        connection = sqlite3.connect('D:\\servi\\source\\ProfitnetDB\\profitnetdb.db')
-        cursor = connection.cursor()
-        sql = "SELECT CAT_CodigoPUC, CAT_NombrePUC FROM Catalogo_PAR"
-        cursor.execute(sql)
-        data = cursor.fetchall()
-        cursor.close()
-
-        header_data = [field[0] for field in cursor.description]
-        self.model = MyTableModel(data, header_data)
-        self.tableViewCata.setModel(self.model)
+    def configurar(self):
+        self.tbl_detalle.setColumnWidth(0, 120)
+        self.tbl_detalle.setColumnWidth(1, 348)
 
 
 def main():
