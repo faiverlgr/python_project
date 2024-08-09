@@ -1,6 +1,7 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget, QPushButton
 from PySide6.QtWidgets import QDialog
+from PySide6.QtCore import Qt
 from view.menu_toolbar import menu_ppal
 from view.Catalogo_frm import Catalogo
 
@@ -32,6 +33,10 @@ class App(QMainWindow):
                                 "    background: red;\n"
                                 "    color: black\n"
                                 "}")
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Escape:
+            print("Tecla Esc presionada, pero la ventana no se cerrará.")
 
     def button_clicked(self):
         # self.dialog = QDialog()

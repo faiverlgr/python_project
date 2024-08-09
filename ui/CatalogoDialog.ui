@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1166</width>
+    <width>738</width>
     <height>594</height>
    </rect>
   </property>
@@ -24,7 +24,20 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_4">
     <item>
+     <widget class="QPushButton" name="btn_iniciar">
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::TabFocus</enum>
+      </property>
+      <property name="text">
+       <string>Volver al inicio</string>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QPushButton" name="btn_agregar">
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::TabFocus</enum>
+      </property>
       <property name="text">
        <string>Agregar</string>
       </property>
@@ -32,6 +45,9 @@
     </item>
     <item>
      <widget class="QPushButton" name="btn_editar">
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::TabFocus</enum>
+      </property>
       <property name="text">
        <string>Editar</string>
       </property>
@@ -39,15 +55,11 @@
     </item>
     <item>
      <widget class="QPushButton" name="btn_salir">
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::TabFocus</enum>
+      </property>
       <property name="text">
        <string>Salir</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="btn_iniciar">
-      <property name="text">
-       <string>Volver al inicio</string>
       </property>
      </widget>
     </item>
@@ -57,7 +69,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>200</y>
+     <y>192</y>
      <width>657</width>
      <height>33</height>
     </rect>
@@ -71,7 +83,11 @@
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="txt_buscar"/>
+     <widget class="QLineEdit" name="txt_buscar">
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::NoFocus</enum>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -79,23 +95,57 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>40</y>
+     <y>32</y>
      <width>417</width>
      <height>146</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_3">
     <item>
-     <widget class="QLineEdit" name="txt_clase"/>
+     <widget class="QLineEdit" name="txt_clase">
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::NoFocus</enum>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="txt_grupo"/>
+     <widget class="QLineEdit" name="txt_grupo">
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::NoFocus</enum>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="txt_cuenta"/>
+     <widget class="QLineEdit" name="txt_cuenta">
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::NoFocus</enum>
+      </property>
+      <property name="dragEnabled">
+       <bool>true</bool>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="txt_subcta"/>
+     <widget class="QLineEdit" name="txt_subcta">
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::NoFocus</enum>
+      </property>
+      <property name="dragEnabled">
+       <bool>true</bool>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -103,7 +153,7 @@
    <property name="geometry">
     <rect>
      <x>136</x>
-     <y>40</y>
+     <y>32</y>
      <width>129</width>
      <height>146</height>
     </rect>
@@ -111,6 +161,9 @@
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
      <widget class="QPushButton" name="btn_clase">
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::TabFocus</enum>
+      </property>
       <property name="text">
        <string>0</string>
       </property>
@@ -118,6 +171,9 @@
     </item>
     <item>
      <widget class="QPushButton" name="btn_grupo">
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::TabFocus</enum>
+      </property>
       <property name="text">
        <string>00</string>
       </property>
@@ -125,6 +181,9 @@
     </item>
     <item>
      <widget class="QPushButton" name="btn_cuenta">
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::TabFocus</enum>
+      </property>
       <property name="text">
        <string>0000</string>
       </property>
@@ -132,6 +191,9 @@
     </item>
     <item>
      <widget class="QPushButton" name="btn_subcta">
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::TabFocus</enum>
+      </property>
       <property name="text">
        <string>000000</string>
       </property>
@@ -139,63 +201,24 @@
     </item>
    </layout>
   </widget>
-  <widget class="QTableView" name="tableViewCata">
-   <property name="geometry">
-    <rect>
-     <x>712</x>
-     <y>40</y>
-     <width>393</width>
-     <height>513</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>248</y>
-     <width>513</width>
-     <height>305</height>
+     <x>32</x>
+     <y>543</y>
+     <width>529</width>
+     <height>17</height>
     </rect>
    </property>
    <property name="title">
     <string/>
    </property>
-   <widget class="QTableWidget" name="tbl_detalle">
-    <property name="geometry">
-     <rect>
-      <x>8</x>
-      <y>8</y>
-      <width>497</width>
-      <height>289</height>
-     </rect>
-    </property>
-    <property name="selectionMode">
-     <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
-    </property>
-    <property name="selectionBehavior">
-     <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
-    </property>
-    <attribute name="verticalHeaderVisible">
-     <bool>false</bool>
-    </attribute>
-    <column>
-     <property name="text">
-      <string>Codigo de cuenta</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>Descripcion de la cuenta</string>
-     </property>
-    </column>
-   </widget>
   </widget>
   <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>40</y>
+     <y>32</y>
      <width>81</width>
      <height>145</height>
     </rect>
@@ -231,7 +254,49 @@
     </item>
    </layout>
   </widget>
+  <widget class="QTableWidget" name="tbl_detalle">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>248</y>
+     <width>497</width>
+     <height>281</height>
+    </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::FocusPolicy::ClickFocus</enum>
+   </property>
+   <property name="selectionMode">
+    <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
+   </property>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+   </property>
+   <attribute name="verticalHeaderVisible">
+    <bool>false</bool>
+   </attribute>
+   <column>
+    <property name="text">
+     <string>Codigo de cuenta</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Descripcion de la cuenta</string>
+    </property>
+   </column>
+  </widget>
  </widget>
+ <tabstops>
+  <tabstop>btn_clase</tabstop>
+  <tabstop>btn_grupo</tabstop>
+  <tabstop>btn_cuenta</tabstop>
+  <tabstop>btn_subcta</tabstop>
+  <tabstop>btn_iniciar</tabstop>
+  <tabstop>btn_agregar</tabstop>
+  <tabstop>btn_editar</tabstop>
+  <tabstop>btn_salir</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
