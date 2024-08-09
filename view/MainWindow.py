@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QMainWindow
-from src.view.menu_toolbar import menu_ppal
+from view.menu_toolbar import menu_ppal
 
 
 class MainWindow(QMainWindow):
